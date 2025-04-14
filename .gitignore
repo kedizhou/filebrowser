@@ -5,6 +5,7 @@ rice-box.go
 .idea/
 /filebrowser
 /filebrowser.exe
+/filebrowser.db
 /dist
 /target
 

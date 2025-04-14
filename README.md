@@ -12,7 +12,8 @@
 
 filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app.  
 
-Base on original version, add **file owner, file read status function**.
+Base on the original version(Mar 27,2025), add **file owner, file read status function**.  
+Below content would not be suitable for use.
 
 ## Demo
 
