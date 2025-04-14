@@ -397,6 +397,12 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 
 	err = d.store.Users.Save(user)
 	checkErr(err)
+
+	// filereadstatus := &files.ReadStatus{
+	// 	Path: "/tmp/",
+	// }
+	// err = d.store.FileReadStatus.Set(filereadstatus)
+	// checkErr(err)
 }
 
 func initConfig() {

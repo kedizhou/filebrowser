@@ -201,6 +201,17 @@
                 <span>{{ t("files.lastModified") }}</span>
                 <i class="material-icons">{{ modifiedIcon }}</i>
               </p>
+              <p 
+                class="owner"
+                title="">
+                <span>{{ t("files.owner") }}</span>
+              </p>
+              <p 
+                class="viewers"
+                :title="t('files.readStatusComments')">
+                <span>{{ t("files.readStatus") }}</span>
+              </p>
+              
             </div>
           </div>
         </div>
@@ -237,6 +248,8 @@
             v-bind:type="item.type"
             v-bind:size="item.size"
             v-bind:path="item.path"
+            v-bind:readstatus="item.readstatus"
+            v-bind:owner="item.owner"
           >
           </item>
         </div>
@@ -292,6 +305,7 @@ import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Search from "@/components/Search.vue";
 import Item from "@/components/files/ListingItem.vue";
+import { queryReadStatus } from "@/utils/filestatus"; // 导入封装的 API
 import {
   computed,
   inject,
@@ -330,6 +344,17 @@ const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
 );
 
+
+const readStatusCache = ref<Record<string, string>>({});
+
+const getReadStatus = async (name: string, url: string): Promise<string> => {
+  const key = `${name}-${url}`;
+  if (!readStatusCache.value[key]) {
+    const status = await queryReadStatus(name, url);
+    readStatusCache.value[key] = status ?? "Unknown";
+  }
+  return readStatusCache.value[key];
+};
 const sizeSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "size" : false
 );

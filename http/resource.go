@@ -86,7 +86,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			return errToStatus(err), err
 		}
-
+		d.store.FilesOwnerInfo.SetfileOwnerInfo("/files"+r.URL.Path, uint64(d.user.ID), "resourceDeleteHandler")
 		return http.StatusNoContent, nil
 	})
 }
@@ -141,7 +141,9 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			_ = d.user.Fs.RemoveAll(r.URL.Path)
 		}
-
+		if err == nil {
+			d.store.FilesOwnerInfo.SetfileOwnerInfo("/files"+r.URL.Path, uint64(d.user.ID), "resourcePostHandler:"+"create")
+		}
 		return errToStatus(err), err
 	})
 }
@@ -174,7 +176,9 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 		w.Header().Set("ETag", etag)
 		return nil
 	}, "save", r.URL.Path, "", d.user)
-
+	if err == nil {
+		d.store.FilesOwnerInfo.SetfileOwnerInfo("/files"+r.URL.Path, uint64(d.user.ID), "resourcePutHandler")
+	}
 	return errToStatus(err), err
 })
 
@@ -218,7 +222,9 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		err = d.RunHook(func() error {
 			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
-
+		if err == nil {
+			d.store.FilesOwnerInfo.SetfileOwnerInfo("src:/files"+r.URL.Path+",dst:/files"+dst, uint64(d.user.ID), "resourcePatchHandler:"+action)
+		}
 		return errToStatus(err), err
 	})
 }

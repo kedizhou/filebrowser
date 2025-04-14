@@ -31,6 +31,12 @@
       <p class="modified">
         <time :datetime="modified">{{ humanTime() }}</time>
       </p>
+      <p class="owner">
+        {{owner}}
+      </p>
+      <p class="viewers">
+        {{humanReadStatus}}
+      </p>
     </div>
   </div>
 </template>
@@ -43,10 +49,13 @@ import { useLayoutStore } from "@/stores/layout";
 import { enableThumbs } from "@/utils/constants";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
-import { files as api } from "@/api";
+import { files as api, files } from "@/api";
 import * as upload from "@/utils/upload";
 import { computed, inject, ref } from "vue";
 import { useRouter } from "vue-router";
+
+import { setReadStatus,queryReadStatus } from "@/utils/filestatus"; // 导入封装的 API
+// import { userInfo } from "os";
 
 const touches = ref<number>(0);
 
@@ -63,6 +72,8 @@ const props = defineProps<{
   index: number;
   readOnly?: boolean;
   path?: string;
+  readstatus?: string;
+  owner?: string;
 }>();
 
 const authStore = useAuthStore();
@@ -108,12 +119,36 @@ const humanSize = () => {
   return props.type == "invalid_link" ? "invalid link" : filesize(props.size);
 };
 
+// const humanReadStatus =() => {
+//   return props.readstatus
+// }
+const humanReadStatus = computed(() => {
+  const maxLength = 5;
+  const text = props.readstatus ?? ""
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '...';
+  }
+  return props.readstatus;
+});
+
+const owner = computed(() => {
+  const maxLength = 5;
+  const text = props.owner ?? ""
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '...';
+  }
+  return props.owner;
+});
+
 const humanTime = () => {
   if (!props.readOnly && authStore.user?.dateFormat) {
     return dayjs(props.modified).format("L LT");
   }
   return dayjs(props.modified).fromNow();
 };
+// const humanReadStatus =() =>{
+//   return queryReadStatus(props.name,props.url)
+// };
 
 const dragStart = () => {
   if (fileStore.selectedCount === 0) {
@@ -228,8 +263,22 @@ const click = (event: Event | KeyboardEvent) => {
     touches.value = 0;
   }, 300);
 
+  const fileReadStatusSetting=async()=>{
+    try {
+      const result = await setReadStatus(props.name, props.url); // 调用封装的 API
+      // console.log("File status posted:", result);
+    } catch (error) {
+      // alert("Error posting file status:"+ error)
+    }
+  }
+
   touches.value++;
   if (touches.value > 1) {
+    // double click event.
+    // directory
+    if  (props.type != '')
+    // if file
+    fileReadStatusSetting();
     open();
   }
 
@@ -271,8 +320,12 @@ const click = (event: Event | KeyboardEvent) => {
 };
 
 const open = () => {
+  // alert(props.url+", name: "+props.name+", path: "+props.path);
   router.push({ path: props.url });
 };
+// const fileReadStatus =() =>{
+//   alert(props.url+","+props.name+","+props.path);
+// };
 
 const getExtension = (fileName: string): string => {
   const lastDotIndex = fileName.lastIndexOf(".");

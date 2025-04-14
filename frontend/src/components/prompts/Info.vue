@@ -38,6 +38,12 @@
 
       <template v-if="!dir">
         <p>
+          <strong>All Viewers: </strong> {{ readstatus }}
+        </p>
+        <p>
+          <strong>Owner: </strong> {{ owner }}
+        </p>
+        <p>
           <strong>MD5: </strong
           ><code
             ><a
@@ -106,6 +112,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { filesize } from "@/utils";
 import dayjs from "dayjs";
 import { files as api } from "@/api";
+import Prompts from "./Prompts.vue";
 
 export default {
   name: "info",
@@ -150,6 +157,21 @@ export default {
       return this.selectedCount === 0
         ? this.req.name
         : this.req.items[this.selected[0]].name;
+    },
+    url: function () {
+      return this.selectedCount === 0
+        ? this.req.url
+        : this.req.items[this.selected[0]].url;
+    },
+    readstatus: function () {
+      return this.selectedCount === 0
+        ? this.req.readstatus
+        : this.req.items[this.selected[0]].readstatus;
+    },
+    owner: function () {
+      return this.selectedCount === 0
+        ? this.req.owner
+        : this.req.items[this.selected[0]].owner;
     },
     dir: function () {
       return (

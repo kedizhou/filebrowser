@@ -15,6 +15,7 @@ type StorageBackend interface {
 	Update(u *User, fields ...string) error
 	DeleteByID(uint) error
 	DeleteByUsername(string) error
+	GetById(uint64) (*User, error)
 }
 
 type Store interface {
@@ -24,6 +25,7 @@ type Store interface {
 	Save(user *User) error
 	Delete(id interface{}) error
 	LastUpdate(id uint) int64
+	GetById(uint64) (*User, error)
 }
 
 // Storage is a users storage.
@@ -39,6 +41,14 @@ func NewStorage(back StorageBackend) *Storage {
 		back:    back,
 		updated: map[uint]int64{},
 	}
+}
+
+func (s *Storage) GetById(uid uint64) (user *User, err error) {
+	user, err = s.back.GetById(uid)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // Get allows you to get a user by its name or username. The provided

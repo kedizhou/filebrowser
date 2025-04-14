@@ -73,7 +73,15 @@
 }
 
 #listing.list .item .modified {
-  width: 25%;
+  width: 15%;
+}
+
+#listing.list .item .viewers {
+  width: 10%;
+}
+
+#listing.list .item .owner {
+  width: 10%;
 }
 
 .share__wrong__password {

@@ -14,6 +14,7 @@ export const useAuthStore = defineStore("auth", {
   getters: {
     // user and jwt getter removed, no longer needed
     isLoggedIn: (state) => state.user !== null,
+    userId: (state) => state.user?.username
   },
   actions: {
     // no context as first argument, use `this` instead

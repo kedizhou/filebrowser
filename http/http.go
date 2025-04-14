@@ -92,5 +92,10 @@ func NewHandler(
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 
+	file := r.PathPrefix("/file").Subrouter()
+	file.PathPrefix("/setfilestatus").Handler(monkey(setFileReadStatus(), "/file/setfilestatus")).Methods("POST")
+	file.PathPrefix("/getfilestatus").Handler(monkey(getFileReadStatus(), "/file/getfilestatus")).Methods("POST")
+	file.PathPrefix("/getfileowner").Handler(monkey(getOwner(), "/file/getfileowner")).Methods("POST")
+
 	return stripPrefix(server.BaseURL, r), nil
 }

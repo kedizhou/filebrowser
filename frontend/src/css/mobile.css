@@ -20,6 +20,9 @@
   #listing.list .item .name {
     width: 60%;
   }
+  #listing.list .item .viewers {
+    width: 30%;
+  }
   #more {
     display: inherit;
   }
@@ -167,5 +170,9 @@
   }
   #listing.list .item .name {
     width: 100%;
+  }
+
+  #listing.list .item .viewers {
+    width: 30%;
   }
 }

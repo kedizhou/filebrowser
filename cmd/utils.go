@@ -105,6 +105,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 
 		log.Println("Using database: " + absPath)
 		data.hadDB = exists
+		// if not exist and crate it.
 		db, err := storm.Open(path)
 		checkErr(err)
 		defer db.Close()

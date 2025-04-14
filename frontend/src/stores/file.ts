@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-
+import { queryReadStatus } from "@/utils/filestatus"; // 导入封装的 API
 export const useFileStore = defineStore("file", {
   // convert to a function
   state: (): {

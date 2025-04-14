@@ -74,7 +74,10 @@
     "sortByLastModified": "按最后修改时间排序",
     "sortByName": "按名称排序",
     "sortBySize": "按大小排序",
-    "noPreview": "此文件无法预览。"
+    "noPreview": "此文件无法预览。",
+    "readStatus": "已阅用户",
+    "readStatusComments":"有哪些人阅读过这个文件",
+    "owner": "文件拥有者"
   },
   "help": {
     "click": "选择文件或文件夹",

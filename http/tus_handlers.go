@@ -59,7 +59,8 @@ func tusPostHandler() handleFunc {
 		if err := openFile.Close(); err != nil {
 			return errToStatus(err), err
 		}
-
+		// upload successful.
+		d.store.FilesOwnerInfo.SetfileOwnerInfo("/files"+r.URL.Path, uint64(d.user.ID), "tusPostHandler")
 		return http.StatusCreated, nil
 	})
 }
@@ -149,7 +150,7 @@ func tusPatchHandler() handleFunc {
 		}
 
 		w.Header().Set("Upload-Offset", strconv.FormatInt(uploadOffset+bytesWritten, 10))
-
+		d.store.FilesOwnerInfo.SetfileOwnerInfo("/files"+r.URL.Path, uint64(d.user.ID), "tusPatchHandler:"+r.URL.Query().Get("action"))
 		return http.StatusNoContent, nil
 	})
 }

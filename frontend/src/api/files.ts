@@ -3,6 +3,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { baseURL } from "@/utils/constants";
 import { upload as postTus, useTus } from "./tus";
 import { createURL, fetchURL, removePrefix } from "./utils";
+import { queryReadStatus,queryOwner } from "@/utils/filestatus"; // 导入封装的 API
 
 export async function fetch(url: string) {
   url = removePrefix(url);
@@ -15,16 +16,22 @@ export async function fetch(url: string) {
   if (data.isDir) {
     if (!data.url.endsWith("/")) data.url += "/";
     // Perhaps change the any
-    data.items = data.items.map((item: any, index: any) => {
-      item.index = index;
-      item.url = `${data.url}${encodeURIComponent(item.name)}`;
-
-      if (item.isDir) {
-        item.url += "/";
-      }
-
-      return item;
-    });
+    data.items = await Promise.all(
+      data.items.map(async (item: any, index: any) => {
+        item.index = index;
+        item.url = `${data.url}${encodeURIComponent(item.name)}`;
+    
+        if (item.isDir) {
+          item.url += "/";
+        }
+    
+        const readStatus: string = (await queryReadStatus(item.name, item.url)) ?? "Unknown"; 
+        const owner: string = (await queryOwner(item.url)) ?? "Unknown"
+        const updatedItem = { ...item, readstatus: readStatus, owner: owner};
+        return updatedItem;
+      })
+    );
+    
   }
 
   return data;

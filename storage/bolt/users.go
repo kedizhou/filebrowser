@@ -3,7 +3,9 @@ package bolt
 import (
 	"errors"
 	"fmt"
+	"log"
 	"reflect"
+	"strconv"
 
 	"github.com/asdine/storm/v3"
 
@@ -13,6 +15,15 @@ import (
 
 type usersBackend struct {
 	db *storm.DB
+}
+
+func (st usersBackend) GetById(i uint64) (user *users.User, err error) {
+	user = &users.User{}
+	err = st.db.One("ID", i, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
 }
 
 func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
@@ -82,6 +93,7 @@ func (st usersBackend) Save(user *users.User) error {
 }
 
 func (st usersBackend) DeleteByID(id uint) error {
+	log.Println("Delete by id: " + strconv.FormatUint(uint64(id), 10))
 	return st.db.DeleteStruct(&users.User{ID: id})
 }
 

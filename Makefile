@@ -8,6 +8,9 @@ LDFLAGS += -X "$(MODULE)/version.Version=$(VERSION)" -X "$(MODULE)/version.Commi
 .PHONY: build
 build: | build-frontend build-backend ## Build binary
 
+.PHONY: build-linux
+build-linux: | build-frontend build-backend-linux ## Build binary
+
 .PHONY: build-frontend
 build-frontend: ## Build frontend
 	$Q cd frontend && pnpm install --frozen-lockfile && pnpm run build
@@ -15,6 +18,10 @@ build-frontend: ## Build frontend
 .PHONY: build-backend
 build-backend: ## Build backend
 	$Q $(go) build -ldflags '$(LDFLAGS)' -o .
+
+.PHONY: build-backend-linux
+build-backend-linux: ## Build backend
+	$Q GOOS=linux GOARCH=amd64 $(go) build -ldflags '$(LDFLAGS)' -o .
 
 .PHONY: test
 test: | test-frontend test-backend ## Run all tests

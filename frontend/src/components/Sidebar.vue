@@ -54,7 +54,7 @@
           :title="$t('sidebar.logout')"
         >
           <i class="material-icons">exit_to_app</i>
-          <span>{{ $t("sidebar.logout") }}</span>
+          <span> {{ $t("sidebar.logout") }}[{{ userId }}]</span>
         </button>
       </div>
     </template>
@@ -143,7 +143,7 @@ export default {
   },
   inject: ["$showError"],
   computed: {
-    ...mapState(useAuthStore, ["user", "isLoggedIn"]),
+    ...mapState(useAuthStore, ["user", "isLoggedIn", "userId"]),
     ...mapState(useFileStore, ["isFiles", "reload"]),
     ...mapState(useLayoutStore, ["currentPromptName"]),
     active() {

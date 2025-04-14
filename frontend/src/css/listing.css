@@ -203,8 +203,16 @@ html[dir="rtl"] #listing {
   width: 50%;
 }
 
+#listing.list .item .viewers {
+  width: 10%;
+}
+
+#listing.list .item .owner {
+  width: 10%;
+}
+
 #listing.list .item .size {
-  width: 25%;
+  width: 15%;
 }
 
 #listing .item.header {

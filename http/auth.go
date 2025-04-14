@@ -1,11 +1,14 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,6 +25,7 @@ const (
 
 type userInfo struct {
 	ID           uint              `json:"id"`
+	UserName     string            `json:"username"`
 	Locale       string            `json:"locale"`
 	ViewMode     users.ViewMode    `json:"viewMode"`
 	SingleClick  bool              `json:"singleClick"`
@@ -38,6 +42,11 @@ type authToken struct {
 }
 
 type extractor []string
+
+// username, password, recaptcha
+type RequestDataLogin struct {
+	UserName string `json:"username"`
+}
 
 func (e extractor) ExtractToken(r *http.Request) (string, error) {
 	token, _ := request.HeaderExtractor{"X-Auth"}.ExtractToken(r)
@@ -108,15 +117,28 @@ func loginHandler(tokenExpireTime time.Duration) handleFunc {
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
+		// read and save the r.Body
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		r.Body.Close()
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 
+		var data RequestDataLogin
+		if err := json.Unmarshal(bodyBytes, &data); err != nil {
+			return http.StatusBadRequest, err
+		}
 		user, err := auther.Auth(r, d.store.Users, d.settings, d.server)
 		switch {
 		case errors.Is(err, os.ErrPermission):
+			log.Println("user login in failed: " + data.UserName + "," + strconv.Itoa(http.StatusForbidden))
 			return http.StatusForbidden, nil
 		case err != nil:
+			log.Println("user login in failed: " + data.UserName + "," + err.Error())
 			return http.StatusInternalServerError, err
 		}
-
+		log.Println("user login in successful: " + user.Username)
 		return printToken(w, r, d, user, tokenExpireTime)
 	}
 }
@@ -187,6 +209,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
+			UserName:     user.Username, //display username in siderbar
 			Locale:       user.Locale,
 			ViewMode:     user.ViewMode,
 			SingleClick:  user.SingleClick,

@@ -67,7 +67,7 @@ export async function renew(jwt: string) {
   const body = await res.text();
 
   if (res.status === 200) {
-    parseToken(body);
+    parseToken(body)
   } else {
     throw new StatusError(
       body || `${res.status} ${res.statusText}`,
